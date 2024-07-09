@@ -16,7 +16,7 @@ jobs:
           
       - name: Set CLI Config
         run: |
-          jf npm-config --global=true --repo-resolve=$PLATFORM_REPO --repo-deploy=$PLATFORM_REPO
+          jf npm-config --global=true --repo-resolve=$PLATFORM_REPO # --repo-deploy=$PLATFORM_REPO
           # cat /home/runner/.jfrog/projects/npm.yaml
           
       - name: Install Dependencies
