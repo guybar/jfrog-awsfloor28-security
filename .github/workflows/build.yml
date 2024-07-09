@@ -12,7 +12,20 @@ jobs:
         env:
           JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+          PLATFORM_REPO: 'guy-npm-dev'
           
+      - name: Set CLI Config
+        run: jf npm-config --global=true --repo-resolve=$PLATFORM_REPO --repo-deploy=$PLATFORM_REPO
+           
+      - name: Install Dependencies
+        run: jf npm install
+           
+      - name: Run tests
+        run: npm test
+         
+      - name: Publish
+        run: jf npm publish
+         
       - name: Run JFrog CLI
         run: |
           # Collect environment variables for the build
