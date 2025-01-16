@@ -19,7 +19,10 @@ jobs:
           
       - name: Set CLI Config
         run: jf npm-config --global=true --repo-resolve=guy-npm-dev  --repo-deploy=guy-npm-dev
-          
+
+      - name: run curation audit
+        run: jf curation-audit
+        
       - name: Install Dependencies
         run: jf npm install
            
