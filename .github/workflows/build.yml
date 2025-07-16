@@ -9,6 +9,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Source
     env:
       JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
       JF_URL: ${{ vars.JF_URL }}
