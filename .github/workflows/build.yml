@@ -1,42 +1,65 @@
-name: "JFrog CLI Example"
-on: push
-
+name: guy-juice-shop-build
+on: workflow_dispatch
+permissions:
+  actions: read # for detecting the Github Actions environment.
+  id-token: write # for creating OIDC tokens for signing.
+  packages: write # for uploading attestations.
+  contents: read
+  
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./Source
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v3
-        env:
-          JF_URL: ${{ secrets.JF_URL }}
-          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-          PLATFORM_REPO: 'guy-npm-dev'
-          
-      - name: Set CLI Config
-        run: jf npm-config --global=true --repo-resolve=guy-npm-dev  --repo-deploy=guy-npm-dev
+    env:
+      JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
+      JF_URL: ${{ vars.JF_URL }}
+      JFROG_CLI_LOG_LEVEL: DEBUG
+      DOCKER_IMAGE_NAME: ${{ vars.JF_DOCKER_REPOSITORY }}juice-shop:1.0.${{github.run_number}}
 
-      - name: run curation audit
-        run: jf curation-audit
-        
-      - name: Install Dependencies
-        run: jf npm install
-           
-      - name: Run tests
-        run: npm test
-         
-      - name: Publish
-        run: jf npm publish
-         
-      - name: Run JFrog CLI
+    steps:
+      # This action checks out the code from the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+          
+      # Download the JFrog CLI and configure using JFrog Project and OIDC provider 
+      - uses: jfrog/setup-jfrog-cli@v4
+        name: Setup JFrog CLI
+        id: setup-cli
+        with:
+          version: latest
+          oidc-provider-name: guy-github
+      
+      # Configure JFrog CLI for NPM 
+      - name: Configure NPM
         run: |
-          # Collect environment variables for the build
-          jf rt bce
-          # Collect VCS details from git and add them to the build
-          jf rt bag
-          # Publish build info
-          jf rt bp
+          jf npmc --repo-deploy=guy-npm-dev --repo-resolve=guy-npm-dev 
+      - name: Install npm dependencies
+        run: |
+          npm install
+          jf npm install --legacy-peer-deps
+      # Scan code
+      - name: scan code
+        run: |
+          # jf audit 
+          # --watches "Juice_Shopp_Watch"
+      # Using NPM Publish to uplaod the NPM Build 
+      - name: build & publish npm package
+        run: |
+          jf npm publish 
+      # Build and Push docker image
+      - name: docker build and push 
+        run: |
+          docker build -t $DOCKER_IMAGE_NAME .
+          jf docker push $DOCKER_IMAGE_NAME
+      # Scan docker image
+      # - name: Scan docker
+      #   run: |
+      #     jf docker scan $DOCKER_IMAGE_NAME 
+      #     --watches "Juice_Shopp_Watch"
+      # Scan the NPM Build with Xray 
+      # - name: scan build
+      #   run: |
+      #     jf rt build-publish
+      #     jf build-scan 
+      # Promote the Build from Dev to Production 
+      # - run: |
+      #    jf rt build-promote --status=production
