@@ -1,4 +1,4 @@
-name: guy-juice-shop-build
+name: guy-npm-demo-build
 on: workflow_dispatch
 permissions:
   actions: read # for detecting the Github Actions environment.
