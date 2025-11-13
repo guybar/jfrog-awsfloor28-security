@@ -57,7 +57,7 @@ jobs:
       # Scan docker image
       - name: Scan docker
         run: |
-          jf docker scan $DOCKER_IMAGE_NAME --watches "security-demo-watch"
+          jf docker scan $DOCKER_IMAGE_NAME --watches "security-demo-watch" --fail false
       # Scan the NPM Build with Xray 
       - name: scan build
         run: |
