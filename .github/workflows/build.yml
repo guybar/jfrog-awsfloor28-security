@@ -36,6 +36,11 @@ jobs:
       - name: Configure NPM
         run: |
           jf npmc --repo-deploy=guy-npm-dev --repo-resolve=guy-npm-dev 
+      # Run curation audit command
+      - name: Run Curation Audit
+        run:
+          jf curation-audit
+      #install npm dependencies
       - name: Install npm dependencies
         run: |
           npm install
