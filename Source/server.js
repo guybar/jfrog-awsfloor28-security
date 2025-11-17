@@ -22,9 +22,9 @@ app.get('/', function(req, res) {
 
 app.get("/uploadPath", (req, res) => {
   const usrUrl = req.query.myURL
-  let { url, path } = parseUrl(usrUrl)
-  //let url = "https://mywebsite.com"
-  //let path = "/myfile.md"
+  //let { url, path } = parseUrl(usrUrl)
+  let url = "https://mywebsite.com"
+  let path = "/myfile.md"
   const {
     statusCode,
     headers,
