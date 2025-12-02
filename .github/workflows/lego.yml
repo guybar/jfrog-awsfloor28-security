@@ -1,4 +1,3 @@
-  build_and_publish_image:
     name: 🐳 Docker Build
     runs-on: ubuntu-latest
     needs: create_image_tag
