@@ -7,7 +7,7 @@ on: workflow_dispatch
 env:
   CustomFeedUserName: github
   CustomFeedPassword: ${{ secrets.ICP_GITHUB_PACKAGE_REGISTRY_TOKEN }}
-  REGISTRY: soleng.jfrog.io
+  REGISTRY: solengeu.jfrog.io
   REPO: sf-long-term-simulation-anaplan-integration
   IMAGE: "anaplan-integration"
   WORKING_DIRECTORY: src
@@ -46,14 +46,15 @@ jobs:
           context: Source
           file: Source/Dockerfile
           push: false
-          tags: soleng.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}
+          tags: solengeu.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}
           secrets: |
             "github_token=${{ secrets.GITHUB_TOKEN }}"
             "github_username=$GITHUB_ACTOR"
     
       - name: 🚀 Scan image and push if no vulnerabilities found
         run: |
-          IMAGE="soleng.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}"
+          IMAGE="solengeu.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}"
           # docker build -t $IMAGE ./Source
-          jf docker scan "$IMAGE" --watches "ALL_REPOS" --format sarif
+          jf docker scan "$IMAGE" --watches "security-demo-watch" 
+          # --format sarif
           jf docker push "$IMAGE"
