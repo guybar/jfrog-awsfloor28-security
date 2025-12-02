@@ -12,16 +12,7 @@ env:
   IMAGE: "anaplan-integration"
   WORKING_DIRECTORY: src
 
-jobs:
-  create_image_tag:
-    runs-on: ubuntu-latest
-    outputs:
-      image_tag: ${{ steps.image_tag.outputs.IMAGE_TAG }}
-    steps:
-      - name: Create Image Tag
-        id: image_tag
-        run: echo "IMAGE_TAG=${GITHUB_REF##*/}-anaplan-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-        
+jobs:        
   build_and_publish_image:
     name: 🐳 Docker Build
     runs-on: ubuntu-latest
