@@ -7,7 +7,7 @@ on: workflow_dispatch
 env:
   CustomFeedUserName: github
   CustomFeedPassword: ${{ secrets.ICP_GITHUB_PACKAGE_REGISTRY_TOKEN }}
-  REGISTRY: artifactory.novus.legogroup.io
+  REGISTRY: soleng.jfrog.io
   REPO: sf-long-term-simulation-anaplan-integration
   IMAGE: "anaplan-integration"
   WORKING_DIRECTORY: src
@@ -28,7 +28,7 @@ jobs:
       - name: 🐸 Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@5b06f730cc5a6f55d78b30753f8583454b08c0aa
         env:
-          JF_URL: "https://solengeu.jfrog.io"
+          JF_URL: "https://soleng.jfrog.io"
           JFROG_CLI_GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
         id: setup-cli
         with:
@@ -46,13 +46,13 @@ jobs:
           context: Source
           file: Source/Dockerfile
           push: false
-          tags: solengeu.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}
+          tags: soleng.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}
           secrets: |
             "github_token=${{ secrets.GITHUB_TOKEN }}"
             "github_username=$GITHUB_ACTOR"
     
       - name: 🚀 Scan image and push if no vulnerabilities found
         run: |
-          IMAGE="solengeu.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}"
+          IMAGE="soleng.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}"
           jf docker scan "$IMAGE" --watches "ALL_REPOS" --format sarif
           jf docker push "$IMAGE"
