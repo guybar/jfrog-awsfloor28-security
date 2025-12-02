@@ -37,23 +37,23 @@ jobs:
         run: |
           jf npmc --repo-deploy=guy-npm-dev --repo-resolve=guy-npm-dev 
       # Run curation audit command
-      - name: Run Curation Audit
-        run:
-          jf curation-audit
+      # - name: Run Curation Audit
+      #   run:
+      #     jf curation-audit
       #install npm dependencies
-      - name: Install npm dependencies
-        run: |
-          npm install
-          jf npm install --legacy-peer-deps
+      # - name: Install npm dependencies
+      #   run: |
+      #     npm install
+      #     jf npm install --legacy-peer-deps
       # Scan code
       - name: scan code
         run: |
           # jf audit 
           # --watches "Juice_Shopp_Watch"
       # Using NPM Publish to uplaod the NPM Build 
-      - name: build & publish npm package
-        run: |
-          jf npm publish 
+      # - name: build & publish npm package
+      #   run: |
+      #     jf npm publish 
       # Build and Push docker image
       - name: docker build and push 
         run: |
