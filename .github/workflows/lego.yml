@@ -55,13 +55,13 @@ jobs:
           context: Source
           file: Source/Dockerfile
           push: false
-          tags: solengeu.jfrog.io/guy-docker-dev/${{ env.IMAGE }}:${{ needs.create_image_tag.outputs.image_tag }}
+          tags: solengeu.jfrog.io/guy-docker-dev/lego:
           secrets: |
             "github_token=${{ secrets.GITHUB_TOKEN }}"
             "github_username=$GITHUB_ACTOR"
     
       - name: 🚀 Scan image and push if no vulnerabilities found
         run: |
-          IMAGE="solengeu.jfrog.io/guy-docker-dev/${{ env.IMAGE }}:${{ needs.create_image_tag.outputs.image_tag }}"
+          IMAGE="solengeu.jfrog.io/guy-docker-dev/lego:"
           jf docker scan "$IMAGE" --watches "ALL_REPOS" --format sarif
           jf docker push "$IMAGE"
