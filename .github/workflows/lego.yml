@@ -4,13 +4,13 @@ name: Verify Successful Build and Test
 #     branches:
 #       - main
 on: workflow_dispatch
-# env:
-#   CustomFeedUserName: github
-#   CustomFeedPassword: ${{ secrets.ICP_GITHUB_PACKAGE_REGISTRY_TOKEN }}
-#   REGISTRY: solengeu.jfrog.io
-#   REPO: sf-long-term-simulation-anaplan-integration
-#   IMAGE: "anaplan-integration"
-#   WORKING_DIRECTORY: src
+env:
+  CustomFeedUserName: github
+  CustomFeedPassword: ${{ secrets.ICP_GITHUB_PACKAGE_REGISTRY_TOKEN }}
+  REGISTRY: solengeu.jfrog.io
+  REPO: sf-long-term-simulation-anaplan-integration
+  IMAGE: "anaplan-integration"
+  WORKING_DIRECTORY: src
 
 jobs:        
   build_and_publish_image:
@@ -23,7 +23,7 @@ jobs:
       contents: read
       actions: write
       id-token: write
-      packages: write
+      packages: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,24 +42,23 @@ jobs:
       
       - name: 🩻 Scan code
         run: |
-          jf audit
-          # --format sarif
+          jf audit --format sarif
           
-      # - name: 🧱 Build Docker Image
-      #  uses: docker/build-push-action@v6
-      #   with:
-      #     context: Source
-      #     file: Source/Dockerfile
-      #     push: false
-      #     tags: solengeu.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}
-      #     secrets: |
-      #       "github_token=${{ secrets.GITHUB_TOKEN }}"
-      #       "github_username=$GITHUB_ACTOR"
+      - name: 🧱 Build Docker Image
+        uses: docker/build-push-action@v6
+         with:
+          context: Source
+          file: Source/Dockerfile
+          push: false
+          tags: solengeu.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}
+          secrets: |
+            "github_token=${{ secrets.GITHUB_TOKEN }}"
+            "github_username=$GITHUB_ACTOR"
     
       - name: 🚀 Scan image and push if no vulnerabilities found
         run: |
           IMAGE="solengeu.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}"
-          docker build -t $IMAGE .
+          # docker build -t $IMAGE .
+          jf docker scan $IMAGE --watches "security-demo-watch" --fail=false --format sarif
           jf docker push $IMAGE
-          jf docker scan $IMAGE --watches "security-demo-watch" --fail=false
-          # --format sarif
+          
