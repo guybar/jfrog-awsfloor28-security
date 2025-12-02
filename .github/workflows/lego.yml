@@ -31,7 +31,7 @@ jobs:
       - name: 🐸 Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
         env:
-          JF_URL: "https://soleng.jfrog.io"
+          JF_URL: "https://solengeu.jfrog.io"
           JFROG_CLI_GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
         id: setup-cli
         with:
