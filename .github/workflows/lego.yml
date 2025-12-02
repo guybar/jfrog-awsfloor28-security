@@ -14,50 +14,6 @@ env:
   WORKING_DIRECTORY: src
 
 jobs:
-  build:
-    name: Build Application
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.400'
-          
-      - name: Restore dependencies
-        run: dotnet restore src/LongTermSimulationAndFramesAnaplan.sln
-        
-      - name: Build the solution
-        run: dotnet build src/LongTermSimulationAndFramesAnaplan.sln --configuration Release --no-restore
-        
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifact
-          path: |
-            ./src/
-          retention-days: 1
-
-  test:
-    name: Run Unit Tests
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifact
-          
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.400'
-
-      - name: Run Tests
-        run: dotnet test
-        
   create_image_tag:
     runs-on: ubuntu-latest
     outputs:
@@ -70,7 +26,6 @@ jobs:
   build_and_publish_image:
     name: 🐳 Docker Build
     runs-on: ubuntu-latest
-    needs: create_image_tag
     permissions:
       contents: read
       actions: write
@@ -83,12 +38,12 @@ jobs:
       - name: 🐸 Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@5b06f730cc5a6f55d78b30753f8583454b08c0aa
         env:
-          JF_URL: "https://artifactory.novus.legogroup.io"
+          JF_URL: "https://solengeu.jfrog.io"
           JFROG_CLI_GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
         id: setup-cli
         with:
-          oidc-provider-name: icp
-          oidc-audience: lego-github
+          oidc-provider-name: guy-github-lego
+          oidc-audience: guy-github-lego
           disable-auto-build-publish: true
       
       - name: 🩻 Scan code
@@ -98,16 +53,16 @@ jobs:
       - name: 🧱 Build Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: src
-          file: src/Dockerfile
+          context: Source
+          file: Source/Dockerfile
           push: false
-          tags: artifactory.novus.legogroup.io/icp/${{ env.IMAGE }}:${{ needs.create_image_tag.outputs.image_tag }}
+          tags: solengeu.jfrog.io/guy-docker-dev/${{ env.IMAGE }}:${{ needs.create_image_tag.outputs.image_tag }}
           secrets: |
             "github_token=${{ secrets.GITHUB_TOKEN }}"
             "github_username=$GITHUB_ACTOR"
     
       - name: 🚀 Scan image and push if no vulnerabilities found
         run: |
-          IMAGE="artifactory.novus.legogroup.io/icp/${{ env.IMAGE }}:${{ needs.create_image_tag.outputs.image_tag }}"
+          IMAGE="solengeu.jfrog.io/guy-docker-dev/${{ env.IMAGE }}:${{ needs.create_image_tag.outputs.image_tag }}"
           jf docker scan "$IMAGE" --watches "ALL_REPOS" --format sarif
           jf docker push "$IMAGE"
