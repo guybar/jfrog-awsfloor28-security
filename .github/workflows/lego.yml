@@ -40,19 +40,20 @@ jobs:
         run: |
           jf audit --format sarif
           
-      - name: 🧱 Build Docker Image
-        uses: docker/build-push-action@v6
-        with:
-          context: Source
-          file: Source/Dockerfile
-          push: false
-          tags: soleng.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}
-          secrets: |
-            "github_token=${{ secrets.GITHUB_TOKEN }}"
-            "github_username=$GITHUB_ACTOR"
+      # - name: 🧱 Build Docker Image
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: Source
+      #     file: Source/Dockerfile
+      #     push: false
+      #     tags: soleng.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}
+      #     secrets: |
+      #       "github_token=${{ secrets.GITHUB_TOKEN }}"
+      #       "github_username=$GITHUB_ACTOR"
     
       - name: 🚀 Scan image and push if no vulnerabilities found
         run: |
           IMAGE="soleng.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}"
+           docker build -t $IMAGE .
           jf docker scan "$IMAGE" --watches "ALL_REPOS" --format sarif
           jf docker push "$IMAGE"
