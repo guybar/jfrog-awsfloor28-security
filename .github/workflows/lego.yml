@@ -38,7 +38,7 @@ jobs:
           version: latest
           oidc-provider-name: guy-github-lego
           oidc-audience: guy-github-lego
-          # disable-auto-build-publish: true
+          disable-auto-build-publish: true
       
       - name: 🩻 Scan code
         run: |
