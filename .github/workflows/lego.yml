@@ -54,6 +54,6 @@ jobs:
       - name: 🚀 Scan image and push if no vulnerabilities found
         run: |
           IMAGE="soleng.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}"
-           docker build -t $IMAGE .
+           docker build -t $IMAGE ./Source
           jf docker scan "$IMAGE" --watches "ALL_REPOS" --format sarif
           jf docker push "$IMAGE"
