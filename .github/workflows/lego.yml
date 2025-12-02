@@ -1,10 +1,8 @@
 name: Verify Successful Build and Test
-
 on:
   pull_request:
     branches:
       - main
-
 env:
   CustomFeedUserName: github
   CustomFeedPassword: ${{ secrets.ICP_GITHUB_PACKAGE_REGISTRY_TOKEN }}
