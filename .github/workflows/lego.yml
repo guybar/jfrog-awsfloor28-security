@@ -16,6 +16,9 @@ jobs:
   build_and_publish_image:
     name: 🐳 Docker Build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Source
     permissions:
       contents: read
       actions: write
@@ -55,7 +58,7 @@ jobs:
       - name: 🚀 Scan image and push if no vulnerabilities found
         run: |
           IMAGE="solengeu.jfrog.io/guy-docker-dev/lego:1.0.${{github.run_number}}"
-          docker build -t $IMAGE ./Source
+          docker build -t $IMAGE .
           jf docker scan "$IMAGE" --watches "security-demo-watch" 
           # --format sarif
           jf docker push "$IMAGE"
