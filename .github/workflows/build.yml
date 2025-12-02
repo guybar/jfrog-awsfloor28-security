@@ -16,7 +16,7 @@ jobs:
       # JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
       JF_URL: ${{ vars.JF_URL }}
       JF_WATCHES: security-demo-watch
-      JFROG_CLI_LOG_LEVEL: DEBUG
+      # JFROG_CLI_LOG_LEVEL: DEBUG
       DOCKER_IMAGE_NAME: ${{ vars.JF_DOCKER_REPOSITORY }}juice-shop:1.0.${{github.run_number}}
 
     steps:
