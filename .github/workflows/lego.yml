@@ -1,3 +1,73 @@
+name: Verify Successful Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  CustomFeedUserName: github
+  CustomFeedPassword: ${{ secrets.ICP_GITHUB_PACKAGE_REGISTRY_TOKEN }}
+  REGISTRY: artifactory.novus.legogroup.io
+  REPO: sf-long-term-simulation-anaplan-integration
+  IMAGE: "anaplan-integration"
+  WORKING_DIRECTORY: src
+
+jobs:
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.400'
+          
+      - name: Restore dependencies
+        run: dotnet restore src/LongTermSimulationAndFramesAnaplan.sln
+        
+      - name: Build the solution
+        run: dotnet build src/LongTermSimulationAndFramesAnaplan.sln --configuration Release --no-restore
+        
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: |
+            ./src/
+          retention-days: 1
+
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.400'
+
+      - name: Run Tests
+        run: dotnet test
+        
+  create_image_tag:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.image_tag.outputs.IMAGE_TAG }}
+    steps:
+      - name: Create Image Tag
+        id: image_tag
+        run: echo "IMAGE_TAG=${GITHUB_REF##*/}-anaplan-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        
+  build_and_publish_image:
     name: 🐳 Docker Build
     runs-on: ubuntu-latest
     needs: create_image_tag
