@@ -55,14 +55,14 @@ jobs:
         run: |
           jf npm publish 
       # Build and Push docker image
-      - name: docker build and push 
-        run: |
-          docker build -t $DOCKER_IMAGE_NAME .
-          jf docker push $DOCKER_IMAGE_NAME
+      # - name: docker build and push 
+      #   run: |
+      #     docker build -t $DOCKER_IMAGE_NAME .
+      #     jf docker push $DOCKER_IMAGE_NAME
       # Scan docker image
-      - name: Scan docker
-        run: |
-          jf docker scan $DOCKER_IMAGE_NAME --watches "security-demo-watch" --fail=false
+      # - name: Scan docker
+      #   run: |
+      #     jf docker scan $DOCKER_IMAGE_NAME --watches "security-demo-watch" --fail=false
       # Scan the NPM Build with Xray 
       - name: scan build
         run: |
